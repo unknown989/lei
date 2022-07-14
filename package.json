@@ -1,0 +1,24 @@
+{
+  "name": "lei",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node ./main.ts",
+    "dev": "ts-node-dev --respawn ./main.ts"
+  },
+  "keywords": [],
+  "author": "Omar Mouttaki",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^18.0.4",
+    "express": "^4.18.1",
+    "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "@types/express": "^4.17.13",
+    "handlebars": "^4.7.7"
+  }
+}
