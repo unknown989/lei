@@ -1,3 +1,5 @@
+// Please edit the session secret
+
 import Handlebars, { Exception } from "handlebars";
 import { readFileSync } from "fs";
 import express from "express";
