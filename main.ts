@@ -4,9 +4,9 @@ const random_names = ["Josh", "Rebecca", "John", "Hannah", "Ostra", "Lana", "Lau
 
 
 class TestModel extends Lei.Model {
-    public run(_req: any): Object {
+    public async run(_req: any): Promise<Lei.LeiResponse> {
         let name = random_names[Math.round(Math.random() * random_names.length)];
-        return { name }
+        return { data: {name} }
     }
 }
 const TestView = new Lei.View("./views/index.hbs", {});
