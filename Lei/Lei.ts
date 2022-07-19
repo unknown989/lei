@@ -1,7 +1,14 @@
 import Handlebars, { Exception } from "handlebars";
-import { readFile, readFileSync } from "fs";
+import { readFileSync } from "fs";
 import express from "express";
+import session from "express-session";
 
+type LeiResponse = {
+    data: Record<string, any>,
+    redirect?: string | undefined,
+    status?: number | undefined,
+    session_data?: Record<string, any>
+}
 
 class Controller {
     private view: View;
@@ -11,10 +18,25 @@ class Controller {
         this.model = model;
     }
     async run(req: any, res: any) {
-        const data = await this.model.run(req);
-        this.view.set_vars(data);
+        const data: LeiResponse = await this.model.run(req);
+        if (data.redirect) {
+            const redirect_url = new URL(data.redirect, `${req.protocol}://${req.get('host')}`);
 
-        res.send(this.view.compile())
+            for (let d in data.data) {
+                redirect_url.searchParams.append(d, data.data[d]);
+            }
+            req.session.initialised = true;
+            for (let s in data.session_data) {
+                req.session[s] = data.session_data[s];
+            }
+
+            res.status(data.status || 200)
+            res.redirect(redirect_url)
+            return;
+        }
+
+        this.view.set_vars({ ...data.data, ...data.session_data });
+        res.status(data.status || 200).send(this.view.compile())
     }
 
 }
@@ -40,10 +62,10 @@ class View {
     }
 }
 abstract class Model {
-    public async run(req: any): Promise<Object> { return {} };
+    public async run(req: any): Promise<LeiResponse> { return { data: {} } };
 }
-
 type Route = {
+
     name: string,
     path: string,
     method?: "GET" | "get" | "post" | "POST" | undefined,
@@ -55,6 +77,7 @@ class Engine {
     constructor() {
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }))
+        this.app.use(session({ secret: "secret" }))
     }
 
     add_route(route: Route) {
@@ -93,3 +116,4 @@ class Engine {
 }
 
 export { Engine, View, Model, Controller, Route };
+export type { LeiResponse }
