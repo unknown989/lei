@@ -10,8 +10,8 @@ class Controller {
         this.view = view;
         this.model = model;
     }
-    run(req: any, res: any) {
-        const data = this.model.run(req);
+    async run(req: any, res: any) {
+        const data = await this.model.run(req);
         this.view.set_vars(data);
 
         res.send(this.view.compile())
@@ -40,7 +40,7 @@ class View {
     }
 }
 abstract class Model {
-    public run(req: any): Object { return {} };
+    public async run(req: any): Promise<Object> { return {} };
 }
 
 type Route = {
@@ -53,6 +53,8 @@ type Route = {
 class Engine {
     private app = express();
     constructor() {
+        this.app.use(express.json());
+        this.app.use(express.urlencoded({ extended: true }))
     }
 
     add_route(route: Route) {
@@ -69,7 +71,7 @@ class Engine {
                 }
             case "POST":
             case "post": {
-                this.app.post(route.path, (req, res) => {
+                this.app.post(route.path, async (req, res) => {
                     route.controller.run(req, res);
                 });
                 break;
