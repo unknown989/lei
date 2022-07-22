@@ -1,9 +1,7 @@
-// Please edit the session secret
-
 import Handlebars, { Exception } from "handlebars";
 import { readFileSync } from "fs";
 import express from "express";
-import session from "express-session";
+import session, { MemoryStore, Store } from "express-session";
 
 type LeiResponse = {
     data: Record<string, any>,
@@ -56,6 +54,9 @@ class View {
         this.hbs_file = hbs_file;
     }
     compile() {
+        if (!this.hbs_file) {
+            return "";
+        }
         let file_content = readFileSync(this.hbs_file, { encoding: "utf8" });
         const templ_func = Handlebars.compile(file_content);
 
@@ -79,7 +80,15 @@ class Engine {
     constructor() {
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }))
-        this.app.use(session({ secret: "secret" }))
+        this.app.use(session({
+            secret: "VDAk+&&9GTS{8M?x)*kCfy#E2)+2:#%SFF_%j2x;(,zQh85duA;)fW$}QNpr,87{49y_[(7Wk7v[$&3/zqTpJfQMwz8JQ7k2Vef]?=6/WEgydZ[5QuqVb7z+3(zwWvk&inviXca7B/}-k-Ex?pPF8gwAQzveh+E$J2J+mb}=P(+Bi8-=,[r2vbpbH+fZq]J(bdX&Rp8(nR8TWH6*Gg/-y7:}_,YR}vJ9$a=-)8GxN*&P!]+aM.JE{@B@Gv4ZMV[g",
+            resave: false,
+            saveUninitialized: false,
+            cookie: {
+                maxAge: Date.now() + (1000 * 60 * 60 * 24 * 365)
+            },
+            store: new MemoryStore()
+        }))
     }
 
     add_route(route: Route) {
