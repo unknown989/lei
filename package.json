@@ -8,7 +8,6 @@
     "dev": "ts-node-dev --respawn ./main.ts"
   },
   "keywords": [],
-  "author": "Omar Mouttaki",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^18.0.4",
