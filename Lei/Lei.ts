@@ -1,7 +1,9 @@
 import Handlebars, { Exception } from "handlebars";
 import { readFileSync } from "fs";
 import express from "express";
-import session, { MemoryStore, Store } from "express-session";
+import session, { MemoryStore } from "express-session";
+import fileUpload from "express-fileupload";
+
 
 type LeiResponse = {
     data: Record<string, any>,
@@ -89,6 +91,7 @@ class Engine {
             },
             store: new MemoryStore()
         }))
+        this.app.use(fileUpload());
     }
 
     add_route(route: Route) {
